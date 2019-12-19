@@ -7,7 +7,16 @@ Keep notes using your smartphone!
 </p>
 
 <p align="center">
-  <img src="https://github.com/iamtheluiz/AnyNote/blob/master/docs/home.jpg?raw=true" alt="Home page">
+  <table>
+    <tr>
+      <td>
+        <img src="https://github.com/iamtheluiz/AnyNote/blob/master/docs/home.jpg?raw=true" alt="Home page">
+      </td>
+      <td>
+        <img src="https://github.com/iamtheluiz/AnyNote/blob/master/docs/dashboard.jpg?raw=true" alt="Dashboard">
+      </td>
+    </tr>
+  </table>
 </p>
 
 ## Requirements
