@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import {
   AsyncStorage,
@@ -15,7 +15,23 @@ import Lottie from 'lottie-react-native';
 import bookmark from '../assets/bookmark-animation.json';
 
 export default function anynote({ navigation }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(null);
+
+  useEffect(() => {
+    // Get user info
+    async function getUserInfo() {
+      const userName = await AsyncStorage.getItem("@anynote/name");
+
+      if (userName !== null) {
+        // Redirect to "Dashboard"
+        navigation.navigate("Dashboard");
+      } else {
+        setName("");
+      }
+    }
+
+    getUserInfo();
+  }, []);
 
   handleSubmit = async () => {
     // Store Name
@@ -28,14 +44,16 @@ export default function anynote({ navigation }) {
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <SafeAreaView style={styles.container}>
-        <Lottie resizeMode="contain" autoSize source={bookmark} autoPlay loop={false} />
-        <Text style={styles.title}>AnyNote</Text>
-        <TextInput style={styles.input} placeholder="Seu Nome" placeholderTextColor="#6edcdaaa" onChangeText={value => setName(value)} autoCapitalize="words" />
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Enviar</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      {name !== null ? (
+        <SafeAreaView style={styles.container}>
+          <Lottie resizeMode="contain" autoSize source={bookmark} autoPlay loop={false} />
+          <Text style={styles.title}>AnyNote</Text>
+          <TextInput style={styles.input} placeholder="Seu Nome" placeholderTextColor="#6edcdaaa" onChangeText={value => setName(value)} autoCapitalize="words" />
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>Enviar</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      ) : <></>}
     </>
   );
 }
