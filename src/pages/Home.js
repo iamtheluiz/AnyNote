@@ -14,29 +14,33 @@ import Lottie from 'lottie-react-native';
 // Import animation
 import bookmark from '../assets/bookmark-animation.json';
 
-export default function anynote() {
+export default function anynote({ navigation }) {
   const [name, setName] = useState("");
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     // Store Name
+    await AsyncStorage.setItem("@anynote/name", name);
+
+    // Redirect to "Dashboard"
+    navigation.navigate("Dashboard");
   }
 
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <SafeAreaView style={style.container}>
+      <SafeAreaView style={styles.container}>
         <Lottie resizeMode="contain" autoSize source={bookmark} autoPlay loop={false} />
-        <Text style={style.title}>AnyNote</Text>
-        <TextInput style={style.input} placeholder="Seu Nome" placeholderTextColor="#6edcdaaa" onChangeText={value => setName(value)} />
-        <TouchableOpacity style={style.submitButton} onPress={handleSubmit}>
-          <Text style={style.submitButtonText}>Enviar</Text>
+        <Text style={styles.title}>AnyNote</Text>
+        <TextInput style={styles.input} placeholder="Seu Nome" placeholderTextColor="#6edcdaaa" onChangeText={value => setName(value)} autoCapitalize="words" />
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>Enviar</Text>
         </TouchableOpacity>
       </SafeAreaView>
     </>
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     flex: 1,
