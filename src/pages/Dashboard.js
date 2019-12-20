@@ -19,39 +19,59 @@ import loading from '../assets/loading-animation.json';
 import plus from '../assets/plus.png';
 import backgroundFigure from '../assets/background-figure.png';
 
-export default function Dashboard() {
+// Components
+import ListItem from '../components/ListItem';
+
+export default function Dashboard(props) {
   const [name, setName] = useState("");
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    // Get user name
-    async function getUserName() {
-      setName(await AsyncStorage.getItem("@anynote/name"));
+    // Get user name and lists
+    async function getAppInfo() {
+      const userName = await AsyncStorage.getItem("@anynote/name");
+      const userLists = JSON.parse(await AsyncStorage.getItem("@anynote/lists"));
+
+      if (userName === null) {
+        props.navigation.navigate("Home");
+      } else {
+        setName(userName);
+      }
+
+      if (userLists === null) {
+        setList([]);
+      } else {
+        setList(userLists);
+      }
     }
 
-    // Show name after some seconds
+    // Show name and lists after some seconds
     setTimeout(() => {
-      getUserName();
+      getAppInfo();
     }, 1300);
   }, []);
 
-  function handleCreateList() {
-    setList([ ...list, "Teste"]);
+  async function handleCreateList() {
+    const newList = [...list, "Teste"];
+
+    // Create new list
+    setList(newList);
+
+    // Store lists
+    await AsyncStorage.setItem("@anynote/lists", JSON.stringify(newList));
   }
 
   return (
     <>
       <StatusBar backgroundColor="#6edcda" barStyle="light-content" />
-      <ImageBackground source={backgroundFigure} style={{ width: '100%', height: 300 }} />
+      <ImageBackground source={backgroundFigure} style={{ width: '100%', height: 250 }} />
       <View style={name ? styles.container : { ...styles.container, ...styles.verticalAlign }}>
 
         {name ?
           <>
             <ScrollView style={styles.ScrollView} showsVerticalScrollIndicator={false}>
               <Text style={styles.welcome}>Olá <Text style={{ ...styles.welcome, fontWeight: 'bold' }}>{name}!</Text></Text>
-              {list.map((item, index) => <TouchableOpacity key={index} style={styles.list}>
-                <Text style={styles.listTitle}>{item}</Text>
-              </TouchableOpacity>)}
+              {list.map((item, index) => <ListItem key={index} item={item} color="#5c6fe6" />)}
             </ScrollView>
             <TouchableOpacity style={styles.createListButton} onPress={handleCreateList}>
               <Image style={styles.buttonSvg} source={plus} />
@@ -83,20 +103,6 @@ const styles = StyleSheet.create({
     color: 'white',
     textShadowColor: '#BBB',
     textShadowRadius: 5,
-  },
-  list: {
-    width: '100%',
-    height: 100,
-    padding: 15,
-    borderRadius: 10,
-    elevation: 2,
-    backgroundColor: '#5c6fe6',
-    marginTop: 10,
-  },
-  listTitle: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: 'white'
   },
   createListButton: {
     position: 'absolute',
