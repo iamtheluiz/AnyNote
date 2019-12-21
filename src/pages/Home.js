@@ -18,8 +18,17 @@ export default function anynote({ navigation }) {
   const [name, setName] = useState(null);
 
   useEffect(() => {
+
     // Get user info
     async function getUserInfo() {
+      // Set list ID
+      const id = await AsyncStorage.getItem("@anynote/id");
+
+      if (id === null) {
+        // First list ID
+        await AsyncStorage.setItem("@anynote/id", "0");
+      }
+
       const userName = await AsyncStorage.getItem("@anynote/name");
 
       if (userName !== null) {

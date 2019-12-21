@@ -23,17 +23,17 @@ import backgroundFigure from '../assets/background-figure.png';
 import ListItem from '../components/ListItem';
 
 export default function Dashboard(props) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [list, setList] = useState([]);
 
   useEffect(() => {
     // Get user name and lists
     async function getAppInfo() {
-      const userName = await AsyncStorage.getItem("@anynote/name");
-      const userLists = JSON.parse(await AsyncStorage.getItem("@anynote/lists"));
+      const userName = await AsyncStorage.getItem('@anynote/name');
+      const userLists = JSON.parse(await AsyncStorage.getItem('@anynote/lists'));
 
       if (userName === null) {
-        props.navigation.navigate("Home");
+        props.navigation.navigate('Home');
       } else {
         setName(userName);
       }
@@ -46,24 +46,35 @@ export default function Dashboard(props) {
     }
 
     // Show name and lists after some seconds
-    setTimeout(() => {
-      getAppInfo();
-    }, 1300);
+    getAppInfo();
   }, []);
 
   async function handleCreateList() {
-    const newList = [...list, "Teste"];
+    // Get last list ID
+    let id = await AsyncStorage.getItem('@anynote/id');
+    id++;
+
+    const newList = [...list, {
+      id,
+      title: 'Teste',
+      description: 'Descrição da Lista',
+      color: '#5c6fe6',
+      items: []
+    }];
 
     // Create new list
     setList(newList);
 
     // Store lists
-    await AsyncStorage.setItem("@anynote/lists", JSON.stringify(newList));
+    await AsyncStorage.setItem('@anynote/lists', JSON.stringify(newList));
+
+    // Store new id value
+    await AsyncStorage.setItem('@anynote/id', JSON.stringify(id));
   }
 
   return (
     <>
-      <StatusBar backgroundColor="#6edcda" barStyle="light-content" />
+      <StatusBar backgroundColor='#6edcda' barStyle='light-content' />
       <ImageBackground source={backgroundFigure} style={{ width: '100%', height: 250 }} />
       <View style={name ? styles.container : { ...styles.container, ...styles.verticalAlign }}>
 
@@ -71,14 +82,14 @@ export default function Dashboard(props) {
           <>
             <ScrollView style={styles.ScrollView} showsVerticalScrollIndicator={false}>
               <Text style={styles.welcome}>Olá <Text style={{ ...styles.welcome, fontWeight: 'bold' }}>{name}!</Text></Text>
-              {list.map((item, index) => <ListItem key={index} item={item} color="#5c6fe6" />)}
+              {list.map((item, index) => <ListItem key={index} item={item} />)}
             </ScrollView>
             <TouchableOpacity style={styles.createListButton} onPress={handleCreateList}>
               <Image style={styles.buttonSvg} source={plus} />
             </TouchableOpacity>
           </>
           :
-          <Lottie resizeMode="contain" autoSize source={loading} autoPlay loop />}
+          <Lottie resizeMode='contain' autoSize source={loading} autoPlay loop />}
       </View >
     </>
   );

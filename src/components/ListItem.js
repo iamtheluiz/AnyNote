@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import {
   Animated,
+  AsyncStorage,
   Image,
   TouchableOpacity,
   Text,
   StyleSheet,
   View
 } from 'react-native';
+import { withNavigation } from 'react-navigation';
 
 // Icons
 import list from '../assets/list.png';
@@ -37,14 +39,21 @@ const FadeInView = (props) => {
   );
 };
 
-export default function ListItem(props) {
+function ListItem(props) {
+  async function handleGetList() {
+    // Set selected list
+    await AsyncStorage.setItem("@anynote/selectedList", JSON.stringify(props.item));
+
+    props.navigation.navigate('List');
+  }
+
   return (
     <FadeInView>
-      <TouchableOpacity style={{ ...styles.list, backgroundColor: props.color }}>
+      <TouchableOpacity style={{ ...styles.list, backgroundColor: props.item.color }} onPress={handleGetList}>
         <Image style={styles.image} source={list} />
         <View style={styles.listInfo}>
-          <Text style={styles.listTitle}>{props.item}</Text>
-          <Text style={styles.description}>Descrição da Lista</Text>
+          <Text style={styles.listTitle}>{props.item.title}</Text>
+          <Text style={styles.description}>{props.item.description}</Text>
         </View>
       </TouchableOpacity>
     </FadeInView>
@@ -77,4 +86,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white'
   }
-})
+});
+
+export default withNavigation(ListItem);
